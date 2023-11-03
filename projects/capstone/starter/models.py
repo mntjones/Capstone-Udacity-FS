@@ -44,12 +44,26 @@ class Actor(db.Model):
     self.age = age
     self.gender = gender
 
+ def insert(self):
+    db.session.add(self)
+    db.session.commit()
+
+  def update(self):
+    db.session.commit()
+
+  def delete(self):
+    db.session.delete(self)
+    db.session.commit()
+
   def format(self):
     return {
       'id': self.id,
       'name': self.name,
       'age': self.catchphrase,
       'gender': self.gender}
+
+   def __repr__(self):
+      return f"<Actor id='{self.id}' name='{self.name}'>"
 
 '''
 Movie
@@ -68,12 +82,27 @@ class Movie(db.Model):
     self.age = age
     self.gender = gender
 
+  def insert(self):
+    db.session.add(self)
+    db.session.commit()
+
+  def update(self):
+    db.session.commit()
+
+  def delete(self):
+    db.session.delete(self)
+    db.session.commit()
+
   def format(self):
     return {
       'id': self.id,
       'name': self.name,
       'age': self.catchphrase,
-      'gender': self.gender}
+      'gender': self.gender
+    }
+
+  def __repr__(self):
+        return f"<Movie id='{self.id}' title='{self.title}'>"
 
 with app.app_context():
   db.create_all()
