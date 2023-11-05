@@ -1,16 +1,13 @@
 
 import os
-from sqlalchemy import Column, String, create_engine
+from sqlalchemy import Column, String, Integer, create_engine
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import json
 
 # App Config
 
-database_path = os.environ['DATABASE_URL']
-if database_path.startswith("postgres://"):
-  database_path = database_path.replace("postgres://", "postgresql://", 1)
-
+database_path = os.environ.get('DATABASE_URL')
 db = SQLAlchemy()
 
 '''
@@ -35,7 +32,7 @@ class Actor(db.Model):
   __tablename__ = 'actors'
 
   id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String)
+  name = db.Column(db.String, nullable=False)
   age = db.Column(db.Integer)
   gender = db.Column(db.String)
 
@@ -62,9 +59,6 @@ class Actor(db.Model):
       'age': self.catchphrase,
       'gender': self.gender}
 
-   def __repr__(self):
-      return f"<Actor id='{self.id}' name='{self.name}'>"
-
 '''
 Movie
 Have title and release date
@@ -73,14 +67,13 @@ class Movie(db.Model):
   __tablename__ = 'movies'
 
   id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String)
-  age = db.Column(db.Integer)
-  gender = db.Column(db.String)
+  title = db.Column(db.String)
+  release_date = db.Column(db.DateTime)
 
-  def __init__(self, name, age, gender):
-    self.name = name
-    self.age = age
-    self.gender = gender
+
+  def __init__(self, title, release_date):
+    self.title = title
+    self.release_date = release_date
 
   def insert(self):
     db.session.add(self)
@@ -96,13 +89,15 @@ class Movie(db.Model):
   def format(self):
     return {
       'id': self.id,
-      'name': self.name,
-      'age': self.catchphrase,
-      'gender': self.gender
+      'title': self.title,
+      'release_date': self.release_date,
     }
 
-  def __repr__(self):
-        return f"<Movie id='{self.id}' title='{self.title}'>"
+class Movie_Actor(db.Model):
+    __tablename__ = 'movie_actors'
+    id = db.Column(db.Integer, primary_key=True)
+    movie_id = db.Column(db.Integer, db.ForeignKey('Movie.id'))
+    actor_id = db.Column(db.Integer, db.ForeignKey('Actor.id'))
 
 with app.app_context():
   db.create_all()
