@@ -28,22 +28,204 @@ def create_app(test_config=None):
         return "Udacity's FSND Captone Project" 
         
     # Route: /movies
+    # MEthod: GET
     # Returns json response: success criteria, list of movies, and integer of total movies
     
-    @app.route('/movies')
+    @app.route('/movies', methods=['GET'])
     def get_movies():
         # Query all movies, order by movie_id
-        selection = Movie.query.order_by(Movie.id).all()
-        current_movies = paginate_data(request, selection)
+        movies = Movie.query.order_by(Movie.id).all()
 
-        if len(current_movies) == 0:
+        if len(movies) == 0:
             abort(404)
 
         return jsonify({
             'success': True,
-            'movies': current_movies,
+            'movies': movies,
             'total_movies': len(Movie.query.all())
-        })
+        }), 200
+
+    # Route: /actors
+    # Method: GET list of actors
+    # Returns json response: success: true, list of actors, and integer of total actors
+    
+    @app.route('/actors', methods=['GET'])
+    def get_actors():
+        actors = Actor.query.all()
+
+        if not actors:
+            abort(404)
+
+        return jsonify({
+            'success': True,
+            'actors': actors,
+            'total_actors': len(actors)
+        }), 200
+
+    # Route: /movies
+    # Method: POST to add a new movie to the database
+    # Returns json response: success: True, movie added
+    # Auth: requires role to have permission to create
+    @app.route('/movies', methods=['POST'])
+    @requires_auth('post:movies')
+    def create_movie(token):
+        data = request.get_json()
+
+        #try block to make sure the data received can create new movie
+        try:
+            new_movie = Movie(title=data['title'], release=data['release'])
+            new_movie.insert()
+
+            return jsonify({
+                'success': True,
+                'movie': new_movie.format()
+            }), 200
+
+        except Exception:
+            ds.session.rollback()
+            abort(422)
+
+    # Route: /actors
+    # Method: POST to add a new actor to the database
+    # Returns json response: success: True, actor added
+    # Auth: requires role to have permission to create
+    @app.route('/actors', methods=['POST'])
+    @requires_auth('post:actors')
+    def create_actor(token):
+        data = request.get_json()
+
+        try:
+            actor = Actor(
+                name=data['name'],
+                age=data['age'],
+                gender=data['gender']
+            )
+            actor.insert()
+
+            return jsonify({
+                'success': True,
+                'actor': actor.format()
+            }), 200
+
+        except Exception:
+            db.session.rollback()
+            abort(422)
+
+    # Route: /movies<int:movie_id>
+    # Method: PATCH to update a movie
+    # Returns json response: success: True, movie updated
+    # Auth: requires role to have permission to patch
+    @app.route('/movies/<int:movie_id>', methods=['PATCH'])
+    @requires_auth('patch:movies')
+    def update_movie(token, movie_id):
+        body = request.get_json()
+
+        movie = Movie.query.filter(Movie.id == movie_id).one_or_none()
+        if movie is None:
+            abort(404)
+
+        try:
+            if body.get("title"):
+                movie.title = body.get('title')
+            if body.get("release_date"):
+                movie.release_date = body.get('release_date')
+
+            movie.update()
+
+            return jsonify({
+                'success': True,
+                'movie': [movie.format()]
+            })
+
+        except Exception:
+            db.session.rollback()
+            abort(400)
+
+    # Route: /actors<int:actor_id>
+    # Method: PATCH to update an actor
+    # Returns json response: success: True, actor updated
+    # Auth: requires role to have permission to patch
+    @app.route('/actors/<int:actor_id>', methods=['PATCH'])
+    @requires_auth('patch:actors')
+    def update_actor(token, actor_id):
+        body = request.get_json()
+
+        actor = Actor.query.filter(Actor.id == actor_id).one_or_none()
+        if actor is None:
+            abort(404)
+
+        try:
+            if body.get("name"):
+                actor.name = body.get('name')
+            if body.get("age"):
+                actor.age = body.get('age')
+            if body.get("gender"):
+                actor.gender = body.get('gender')
+
+            actor.update()
+
+            return jsonify({
+                'success': True,
+                'actors': [actor.format()]
+            })
+
+        except Exception:
+            db.session.rollback()
+            abort(400)
+
+    # Route: /movies<int:movie_id>
+    # Method: DELETE to remove a movie from the database
+    # Returns json response: success: True, movie updated
+    # Auth: requires role to have permission to delete
+    @app.route('/movies/<int:movie_id>', methods=['DELETE'])
+    @requires_auth('delete:movies')
+    def delete_movie(token, movie_id):
+        movie = Movie.query.filter(Movie.id == movie_id).one_or_none()
+        if movie is None:
+            abort(404)
+
+        try:
+            movie.delete()
+            selection = Movie.query.order_by(Movie.id).all()
+            current_movies = paginate_data(request, selection)
+
+            return jsonify({
+                'success': True,
+                'deleted': movie_id,
+                'movies': current_movies,
+                'total_movies': len(Movie.query.all())
+            })
+
+        except Exception:
+            db.session.rollback()
+            abort(422)
+
+    # Route: /actors<int:actor_id>
+    # Method: DELETE to remove an actor from the database
+    # Returns json response: success: True, movie updated
+    # Auth: requires role to have permission to delete
+    @app.route('/actors/<int:actor_id>', methods=['DELETE'])
+    @requires_auth('delete:actors')
+    def delete_actor(token, actor_id):
+        actor = Actor.query.filter(Actor.id == actor_id).one_or_none()
+        if actor is None:
+            abort(404)
+
+        try:
+            actor.delete()
+            selection = Actor.query.order_by(Actor.id).all()
+            current_actors = paginate_data(request, selection)
+
+            return jsonify({
+                'success': True,
+                'deleted': actor_id,
+                'actors': current_actors,
+                'total_actors': len(Actor.query.all())
+            })
+
+        except Exception:
+            db.session.rollback()
+            abort(422)
 
     return app
 
