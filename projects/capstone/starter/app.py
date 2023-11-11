@@ -180,20 +180,21 @@ def create_app(test_config=None):
     @app.route('/movies/<int:movie_id>', methods=['DELETE'])
     @requires_auth('delete:movies')
     def delete_movie(token, movie_id):
-        movie = Movie.query.filter(Movie.id == movie_id).one_or_none()
+
+        movie = Movie.query.get(movie_id)
+
         if movie is None:
             abort(404)
 
         try:
             movie.delete()
-            selection = Movie.query.order_by(Movie.id).all()
-            current_movies = paginate_data(request, selection)
+            selection = Movie.query.all()
 
             return jsonify({
                 'success': True,
                 'deleted': movie_id,
-                'movies': current_movies,
-                'total_movies': len(Movie.query.all())
+                'movies': selection,
+                'total_movies': len(selection)
             })
 
         except Exception:
@@ -207,25 +208,77 @@ def create_app(test_config=None):
     @app.route('/actors/<int:actor_id>', methods=['DELETE'])
     @requires_auth('delete:actors')
     def delete_actor(token, actor_id):
-        actor = Actor.query.filter(Actor.id == actor_id).one_or_none()
+
+        actor = Actor.query.get(actor_id)
+
         if actor is None:
             abort(404)
 
         try:
             actor.delete()
-            selection = Actor.query.order_by(Actor.id).all()
-            current_actors = paginate_data(request, selection)
+            selection = Actor.query.all()
 
             return jsonify({
                 'success': True,
                 'deleted': actor_id,
-                'actors': current_actors,
-                'total_actors': len(Actor.query.all())
+                'actors': selection,
+                'total_actors': len(selection)
             })
 
         except Exception:
             db.session.rollback()
             abort(422)
+
+    # Error Handlers
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+            "success": False,
+            "error": 400,
+            "message": "Bad Request - invalid"
+        }), 400
+
+    @app.errorhandler(401)
+    def unauthorized(error):
+        return jsonify({
+            "success": False,
+            "error": 401,
+            "message": "Authentication error"
+        }), 401
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+            "success": False,
+            "error": 404,
+            "message": "Resource is not found"
+        }), 404
+
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return jsonify({
+            "success": False,
+            "error": 405,
+            "message": "Not allowed to perform action"
+        }), 405
+
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "error": 422,
+            "message": "Request cannot be processed"
+        }), 422
+
+    @app.errorhandler(AuthError)
+    def not_auth(error):
+        return jsonify({
+            'success': False,
+            'error': error.status_code,
+            'message': error.error.get('description')
+        }), error.status_code
+
 
     return app
 

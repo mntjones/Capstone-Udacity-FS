@@ -9,10 +9,10 @@ import os
 load_dotenv()
 
 #REMOVE - in .env file
-AUTH0_DOMAIN = 'dev-xdrh4efh06zfn7ch.us.auth0.com'
+AUTH0_DOMAIN = 'dev-upxe8nh1f3uhvzh5.us.auth0.com'
 ALGORITHMS = ['RS256']
-API_AUDIENCE = 'udacity-test'
-CLIENT_ID = 'AxP76dlPMRuJUZjihzfs9gl6PqMUDlOe'
+API_AUDIENCE = 'Capstone-theater'
+CLIENT_ID = 'ioqoXvUFjAntA24ZIhluY2VljiKwcYc5'
 
 
 ## AuthError Exception
