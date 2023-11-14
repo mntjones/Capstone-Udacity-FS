@@ -6,6 +6,10 @@ The Movie Theater API supports allowing:
 - 'moviegoers' to query (GET) the database for movies and actors. 
 - 'managers' to read movies and actors (GET), update movies and actors (PATCH), create new items (CREATE) and delete (DELETE) items from the database.
 
+#### Motivation
+
+I completed this project to get the full stack nano degree through Udacity to support my role as a software engineer at my current company. I was looking to get more experience in coding in the full stack, as well as get up-to-date on the best practices regarding style and security.
+
 
 ## Getting Started
 
