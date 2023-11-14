@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
-#REMOVE - in .env file
+#REMOVE - in .env file - here for code review
 AUTH0_DOMAIN = 'dev-upxe8nh1f3uhvzh5.us.auth0.com'
 ALGORITHMS = ['RS256']
 API_AUDIENCE = 'Capstone-theater'
