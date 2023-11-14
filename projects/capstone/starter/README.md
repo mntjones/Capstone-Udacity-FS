@@ -28,6 +28,8 @@ This will install all of the required packages we selected within the requiremen
 
 API can be accessed through: https://capstone-web-service-sbnk.onrender.com
 
+https://dev-upxe8nh1f3uhvzh5.us.auth0.com/authorize?audience=capstone&response_type=token&client_id=ioqoXvUFjAntA24ZIhluY2VljiKwcYc5&redirect_uri=https://127.0.0.1:8080/login-results
+
 ## Auth0 Roles
 
 Auth0 information for endpoints that require authentication can be found in setup.sh.

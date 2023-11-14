@@ -4,9 +4,9 @@ from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
 
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 import os
-load_dotenv()
+#load_dotenv()
 
 #REMOVE - in .env file - here for code review
 AUTH0_DOMAIN = 'dev-upxe8nh1f3uhvzh5.us.auth0.com'
