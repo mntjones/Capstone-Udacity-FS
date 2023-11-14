@@ -1,5 +1,10 @@
 # Capstone Project - Movies and Actor Database
 
+The Movie Theater API supports allowing:
+- 'moviegoers' to query (GET) the database for movies and actors. 
+- 'managers' to read movies and actors (GET), update movies and actors (PATCH), create new items (CREATE) and delete items from the database.
+
+
 ## Getting Started
 
 ### Installing Dependencies
@@ -21,20 +26,55 @@ This will install all of the required packages we selected within the requiremen
 
 ## Running the App
 
-API can be accessed through: <render website>
+API can be accessed through: https://capstone-web-service-sbnk.onrender.com
 
 ## Auth0 Roles
 
-setup.sh contains the info for 
-
-
-## Run the App
-
-
-### Endpoints
+Auth0 information for endpoints that require authentication can be found in setup.sh.
 
 
 ## Testing
 
+cd into capstone -> starter and run:
+```python -m test_app.py ```
+
 
 ## Error Handling
+
+Errors are returned in JSON format
+
+The API will return these error types when requests fail:
+
+{
+  "success": False,
+  "error": 400,
+  "message": "Bad Request - invalid"
+}
+
+{
+  "success": False,
+  "error": 401,
+  "message": "Authentication error"
+}
+
+{
+  "success": False,
+  "error": 404,
+  "message": "Resource is not found"
+}
+
+{
+  "success": False,
+  "error": 405,
+  "message": "Not allowed to perform action"
+}
+
+{
+  "success": False,
+  "error": 422,
+  "message": "Request cannot be processed"
+}
+
+
+
+

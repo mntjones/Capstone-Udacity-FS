@@ -7,8 +7,6 @@ from flask_cors import CORS
 
 from auth import AuthError, requires_auth
 
-MOVIES_PER_PAGE = 10
-
 
 def create_app(test_config=None):
 

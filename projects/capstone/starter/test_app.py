@@ -12,8 +12,6 @@ from models import setup_db, Movie, Actor
 
 # Auth headers to test auth requirements
 
-
-
 # CapstoneTest Case - defines the variables and initializes the app
 
 class CapstoneTestCase(unittest.TestCase):
@@ -21,7 +19,7 @@ class CapstoneTestCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
         self.client = self.app.test_client
-        self.database_name = "capstone-test"
+        self.database_name = "capstone-web-service"
         self.database_path = "postgres://{}/{}".format('localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
