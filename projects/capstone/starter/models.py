@@ -41,7 +41,7 @@ class Actor(db.Model):
     self.age = age
     self.gender = gender
 
- def insert(self):
+  def insert(self):
     db.session.add(self)
     db.session.commit()
 
