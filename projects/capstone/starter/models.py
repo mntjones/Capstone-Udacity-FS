@@ -98,6 +98,3 @@ class Movie_Actor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     movie_id = db.Column(db.Integer, db.ForeignKey('Movie.id'))
     actor_id = db.Column(db.Integer, db.ForeignKey('Actor.id'))
-
-with app.app_context():
-  db.create_all()
