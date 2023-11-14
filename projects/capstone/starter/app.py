@@ -21,12 +21,13 @@ def create_app(test_config=None):
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         return response
 
+    #Landing page
     @app.route('/')
     def index():
         return "Udacity's FSND Captone Project" 
         
     # Route: /movies
-    # MEthod: GET
+    # Method: GET
     # Returns json response: success criteria, list of movies, and integer of total movies
     
     @app.route('/movies', methods=['GET'])
@@ -80,7 +81,7 @@ def create_app(test_config=None):
             }), 200
 
         except Exception:
-            ds.session.rollback()
+            db.session.rollback()
             abort(422)
 
     # Route: /actors

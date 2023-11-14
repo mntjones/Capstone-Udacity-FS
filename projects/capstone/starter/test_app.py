@@ -12,6 +12,14 @@ from models import setup_db, Movie, Actor
 
 # Auth headers to test auth requirements
 
+moviegoer_auth_header = {
+    "Authorization": "Bearer {}".format(os.environ.get('MOVIEGOER_TOKEN'))
+}
+
+manager_auth_header = {
+    "Authorization": "Bearer {}".format(os.environ.get('MANAGER_TOKEN'))
+}
+
 # CapstoneTest Case - defines the variables and initializes the app
 
 class CapstoneTestCase(unittest.TestCase):
@@ -78,7 +86,7 @@ class CapstoneTestCase(unittest.TestCase):
             'gender': "New Male"
         } 
 
-        res = self.client().post('/actors', data=json.dumps(new_actor_data), headers={'Content-Type': 'application/json'})
+        res = self.client().post('/actors', data=json.dumps(new_actor_data), headers=manager_auth_header)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -87,13 +95,13 @@ class CapstoneTestCase(unittest.TestCase):
         actor = Actor.query.get(data['actor']['id'])
         self.assertTrue(actor)
 
-    def test_create_new_movie(self):
+    def test_create_movie(self):
         new_movie_data = {
             'title': "New movie Title",
             'release': "New movie Release Date",
         }
 
-        res = self.client().post('/movies', data=json.dumps(new_movie_data), headers={'Content-Type': 'application/json'})
+        res = self.client().post('/movies', data=json.dumps(new_movie_data), headers=manager_auth_header)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -114,7 +122,7 @@ class CapstoneTestCase(unittest.TestCase):
         res = self.client().patch(
             f'/actors/%s' % (actor.id),
             data=json.dumps(actor_update),
-            headers={'Content-Type': 'application/json'}
+            headers=manager_auth_header
         )
         # load the new data with the patched age
         data = json.loads(res.data)
@@ -123,35 +131,39 @@ class CapstoneTestCase(unittest.TestCase):
         self.assertTrue(data['success'])
         self.assertEqual(data['actor']['age'], actor_update['age'])
 
-    def test_404_update_actor(self):
+    def test_not_auth_update_actor(self):
         actor_update = {
             'age': '1'
         } 
 
-        res = self.client().patch('/actors/9999', data=json.dumps(actor_data_patch), headers={'Content-Type': 'application/json'})
+        res = self.client().patch(
+            f'/actors/%s' % (actor.id),
+            data=json.dumps(actor_update),
+            headers=moviegoer_auth_header
+        )
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 404)
-        self.assertEqual(data['error'], 404)
+        self.assertEqual(res.status_code, 401)
+        self.assertEqual(data['error'], 401)
         self.assertFalse(data['success'])
 
     def test_delete_actor(self):
         actor = Actor(name="Actor", age="25", gender="male")
         actor.insert()
 
-        res = self.client().delete(f'/actors/%s' % actor.id)
+        res = self.client().delete(f'/actors/%s' % actor.id, headers=manager_auth_header)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertEqual(data['actor_id'], actor.id)
 
-    def test_404_delete_actor(self):
-        res = self.client().delete('/actors/9999')
+    def test_not_auth_delete_actor(self):
+        res = self.client().delete(f'/actors/%s' % actor.id, headers=moviegoer_auth_header)
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 404)
-        self.assertEqual(data['error'], 404)
+        self.assertEqual(res.status_code, 401)
+        self.assertEqual(data['error'], 401)
         self.assertFalse(data['success'])
 
     def test_update_movie(self):
@@ -165,7 +177,7 @@ class CapstoneTestCase(unittest.TestCase):
         res = self.client().patch(
             f'/movies/%s' % (movie.id),
             data=json.dumps(movie_data_patch),
-            headers={'Content-Type': 'application/json'}
+            headers=manager_auth_header
         )
         data = json.loads(res.data)
 
@@ -174,35 +186,39 @@ class CapstoneTestCase(unittest.TestCase):
         self.assertEqual(data['movie']['title'], movie.title)
         self.assertEqual(data['movie']['release'], movie_update['release'])
 
-    def test_404_update_movie(self):
+    def test_not_auth_update_movie(self):
         movie_update = {
             'title': 'Update Movie'
         } 
 
-        res = self.client().patch('/movies/9999', data=json.dumps(movie_data_patch), headers={'Content-Type': 'application/json'})
+        res = self.client().patch(
+            f'/movies/%s' % (movie.id),
+            data=json.dumps(movie_data_patch),
+            headers=moviegoer_auth_header
+        )
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 404)
-        self.assertEqual(data['error'], 404)
+        self.assertEqual(res.status_code, 401)
+        self.assertEqual(data['error'], 401)
         self.assertFalse(data['success'])
 
     def test_delete_movie(self):
         movie = Movie(title="Delete Movie", release="January 1, 2023")
         movie.insert()
 
-        res = self.client().delete(f'/movies/%s' % movie.id)
+        res = self.client().delete(f'/movies/%s' % movie.id, headers=manager_auth_header)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertEqual(data['movie_id'], movie.id)
 
-    def test_404_delete_movie(self):
-        res = self.client().delete('/movies/9999')
+    def test_not_auth_delete_movie(self):
+        res = self.client().delete(f'/movies/%s' % movie.id, headers=moviegoer_auth_header)
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 404)
-        self.assertEqual(data['error'], 404)
+        self.assertEqual(res.status_code, 401)
+        self.assertEqual(data['error'], 401)
         self.assertFalse(data['success'])
 
 # Make the tests conveniently executable
