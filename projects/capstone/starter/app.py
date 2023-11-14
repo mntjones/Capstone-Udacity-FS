@@ -164,7 +164,7 @@ def create_app(test_config=None):
 
             return jsonify({
                 'success': True,
-                'actors': [actor.format()]
+                'actor': [actor.format()]
             })
 
         except Exception:
